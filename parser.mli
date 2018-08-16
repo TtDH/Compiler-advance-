@@ -21,6 +21,8 @@ type token =
   | MINUS
   | TIMES
   | DIV
+  | RESIDUE
+  | POW
   | LB
   | RB
   | LS

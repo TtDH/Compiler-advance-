@@ -205,6 +205,34 @@ and trans_exp ast nest env = match ast with
                                            ^ "\tcqto\n"
                                            ^ "\tidivq %rbx\n"
                                            ^ "\tpushq %rax\n"
+                  (* %のコード add by q1 *)
+                  | CallFunc ("%", [left; right]) ->
+                                            trans_exp left nest env
+                                          ^ trans_exp right nest env
+                                          ^ "\tpopq %rbx\n"
+                                          ^ "\tpopq %rax\n"
+                                          ^ "\tcqto\n"
+                                          ^ "\tidivq %rbx\n"
+                                          ^ "\tpushq %rdx\n"
+                  (* ^のコード add by q3 *)
+                  | CallFunc ("^", [left; right]) -> 
+                                          let l1 = incLabel() in
+                                          let l2 = incLabel() in
+                                            trans_exp left nest env
+                                            ^ trans_exp right nest env
+                                            ^ "\tpopq %rbx\n"
+                                            ^ "\tpopq %rax\n"
+                                            ^ "\tpushq %rbx\n"
+                                            ^ "\tpopq %rcx\n"
+                                            ^ "\tmovq $1, %rdx\n"
+                                            ^ sprintf "L%d:\n" l1 
+                                            ^ "\tcmpq $0, %rcx\n"
+                                            ^ sprintf "\tje L%d\n" l2
+                                            ^ "\timulq %rax, %rdx\n"
+                                            ^ "\tsubq $1, %rcx\n"
+                                            ^ sprintf "\tjmp L%d\n" l1
+                                            ^ sprintf "L%d:\n" l2
+                                            ^ "\tpushq %rdx\n" 
                   (* 反転のコード *)
                   | CallFunc("!",  arg::_) -> 
                                              trans_exp arg nest env

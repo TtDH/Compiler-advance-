@@ -32,6 +32,8 @@ rule lexer = parse
 | '-'                     { MINUS }
 | '*'                     { TIMES }
 | '/'                     { DIV }
+| '%'                     { RESIDUE }   (* add by q1 *)
+| '^'                     { POW }       (* add by q3 *)
 | '{'                     { LB  }
 | '}'                     { RB  }
 | '['                     { LS }
